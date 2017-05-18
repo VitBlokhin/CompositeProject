@@ -40,7 +40,7 @@ public class Country implements UnitComponent{
     public String getItem() {
         String result = "Страна " + name;
         for(UnitComponent region : regions) {
-            result += "\n\t" + region;
+            result += "\n\t" + region.getItem();
         }
 
         return result;
