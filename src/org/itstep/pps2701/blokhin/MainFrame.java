@@ -93,9 +93,11 @@ public class MainFrame  extends JFrame {
         addRegionBtn.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-                if(node == null) return;
-                if(node.getUserObject().getClass().equals(Country.class)) {
+                // здесь и в аналогичных методах:
+                // для добавления региона требуется в списке выделить страну, куда будем его добавлять
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent(); // получаем выделенный элемент
+                if(node == null) return;                                                                    // проверка
+                if(node.getUserObject().getClass().equals(Country.class)) {                                 // является ли выделенный элемент экземпляром Country
                     String newRegionName = JOptionPane.showInputDialog("Введите название региона:");
                     if(newRegionName != "") {
                         compositeApp.createRegion(newRegionName, (Country) node.getUserObject());
