@@ -73,28 +73,33 @@ public class MainFrame  extends JFrame {
         addCountryBtn.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String newCountryName = JOptionPane.showInputDialog("Введите название страны:");
-                if(newCountryName != "") compositeApp.createCountry(newCountryName);
+                try {
+                    String newCountryName = JOptionPane.showInputDialog("Введите название страны:");
+                    if(newCountryName != "") compositeApp.createCountry(newCountryName);
 
-                tree = new JTree(createTreeModel());
-                tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+                    tree = new JTree(createTreeModel());
+                    tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
-                getContentPane().remove(treeScroller);
-                treeScroller = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                    getContentPane().remove(treeScroller);
+                    treeScroller = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-                getContentPane().add(treeScroller);
+                    getContentPane().add(treeScroller);
 
-                getContentPane().revalidate();
-                getContentPane().repaint();
+                    getContentPane().revalidate();
+                    getContentPane().repaint();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
+
             }
         });
 
         addRegionBtn.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // здесь и в аналогичных методах:
-                // для добавления региона требуется в списке выделить страну, куда будем его добавлять
+            // здесь и в аналогичных методах:
+            // для добавления региона требуется в списке выделить страну, куда будем его добавлять
+            try {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent(); // получаем выделенный элемент
                 if(node == null) return;                                                                    // проверка
                 if(node.getUserObject().getClass().equals(Country.class)) {                                 // является ли выделенный элемент экземпляром Country
@@ -114,18 +119,49 @@ public class MainFrame  extends JFrame {
                         getContentPane().repaint();
                     } else return;
                 }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+            }
             }
         });
         addCityBtn.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-                if(node == null) return;
-                if(node.getUserObject().getClass().equals(Region.class)) {
+                try {
+                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+                    if(node == null) return;
+                    if(node.getUserObject().getClass().equals(Region.class)) {
 
-                    String newCityName = JOptionPane.showInputDialog("Введите название города:");
-                    if(newCityName != "") {
-                        compositeApp.createCity(newCityName, (Region) node.getUserObject());
+                        String newCityName = JOptionPane.showInputDialog("Введите название города:");
+                        if(newCityName != "") {
+                            compositeApp.createCity(newCityName, (Region) node.getUserObject());
+
+                            tree = new JTree(createTreeModel());
+                            tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+
+                            getContentPane().remove(treeScroller);
+                            treeScroller = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+                            getContentPane().add(treeScroller);
+
+                            getContentPane().revalidate();
+                            getContentPane().repaint();
+                        } else return;
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        removeCountryBtn.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+                    if(node == null) return;
+                    if(node.getUserObject().getClass().equals(Country.class)) {
+                        compositeApp.removeCountry((Country) node.getUserObject());
 
                         tree = new JTree(createTreeModel());
                         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -137,29 +173,9 @@ public class MainFrame  extends JFrame {
 
                         getContentPane().revalidate();
                         getContentPane().repaint();
-                    } else return;
-                }
-            }
-        });
-
-        removeCountryBtn.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-                if(node == null) return;
-                if(node.getUserObject().getClass().equals(Country.class)) {
-                    compositeApp.removeCountry((Country) node.getUserObject());
-
-                    tree = new JTree(createTreeModel());
-                    tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
-                    getContentPane().remove(treeScroller);
-                    treeScroller = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
-                    getContentPane().add(treeScroller);
-
-                    getContentPane().revalidate();
-                    getContentPane().repaint();
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -167,22 +183,26 @@ public class MainFrame  extends JFrame {
         removeRegionBtn.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-                DefaultMutableTreeNode nodeParent = (DefaultMutableTreeNode)node.getParent();
-                if(node == null) return;
-                if(node.getUserObject().getClass().equals(Region.class)) {
-                    compositeApp.removeRegion((Region) node.getUserObject(), (Country) nodeParent.getUserObject());
+                try {
+                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+                    DefaultMutableTreeNode nodeParent = (DefaultMutableTreeNode) node.getParent();
+                    if(node == null) return;
+                    if(node.getUserObject().getClass().equals(Region.class)) {
+                        compositeApp.removeRegion((Region) node.getUserObject(), (Country) nodeParent.getUserObject());
 
-                    tree = new JTree(createTreeModel());
-                    tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+                        tree = new JTree(createTreeModel());
+                        tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
-                    getContentPane().remove(treeScroller);
-                    treeScroller = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                        getContentPane().remove(treeScroller);
+                        treeScroller = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-                    getContentPane().add(treeScroller);
+                        getContentPane().add(treeScroller);
 
-                    getContentPane().revalidate();
-                    getContentPane().repaint();
+                        getContentPane().revalidate();
+                        getContentPane().repaint();
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -190,22 +210,26 @@ public class MainFrame  extends JFrame {
         removeCityBtn.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-                DefaultMutableTreeNode nodeParent = (DefaultMutableTreeNode)node.getParent();
-                if(node == null) return;
-                if(node.getUserObject().getClass().equals(City.class)) {
-                    compositeApp.removeCity((City) node.getUserObject(), (Region) nodeParent.getUserObject());
+                try {
+                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+                    DefaultMutableTreeNode nodeParent = (DefaultMutableTreeNode) node.getParent();
+                    if(node == null) return;
+                    if(node.getUserObject().getClass().equals(City.class)) {
+                        compositeApp.removeCity((City) node.getUserObject(), (Region) nodeParent.getUserObject());
 
-                    tree = new JTree(createTreeModel());
-                    tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+                        tree = new JTree(createTreeModel());
+                        tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
-                    getContentPane().remove(treeScroller);
-                    treeScroller = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                        getContentPane().remove(treeScroller);
+                        treeScroller = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-                    getContentPane().add(treeScroller);
+                        getContentPane().add(treeScroller);
 
-                    getContentPane().revalidate();
-                    getContentPane().repaint();
+                        getContentPane().revalidate();
+                        getContentPane().repaint();
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
